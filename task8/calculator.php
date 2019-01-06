@@ -1,0 +1,68 @@
+<?php
+include_once('../calculation.php');
+
+/**
+ * Created by PhpStorm.
+ * User: vaishali.m
+ * Date: 04-01-2019
+ * Time: 21:01
+ */
+class calculator implements calculation
+{
+	public $result;
+	public $input;
+
+	public function __construct($inputData)
+	{
+		$this->result = 1;
+		$this->input  = $inputData;
+	}
+
+	/**
+	 * function to calculate multiplication of numbers
+	 *
+	 */
+	public function calculate()
+	{
+		$negNum = '';
+		if (isset($this->input[1]) && $this->input[1] === 'multiply')
+		{
+			if (!empty($this->input[2]))
+			{
+				$inputStr = str_replace("\\", "", $this->input[2]);
+				$ins = preg_split('/[\\\n,;]+/',$this->input[2],-1, PREG_SPLIT_NO_EMPTY);
+				if (!empty($ins))
+				{
+					foreach ($ins as $val)
+					{
+						if (!empty($val))
+						{
+							if ($val < 0)
+							{
+								$negNum .= $val . ',';
+							}
+							elseif ($val < 1000)
+							{
+								$this->result *= $val;
+							}
+						}
+					}
+				}
+
+				if (!empty($negNum))
+				{
+					$this->result = "Negative numbers (" . rtrim($negNum, ',') . ") not allowed.";
+				}
+			}
+		}
+
+		return $this->result;
+	}
+}
+
+if(!empty($argv))
+{
+	$calObj      = new calculator($argv);
+	$finalResult = $calObj->calculate();
+	echo $finalResult;
+}
